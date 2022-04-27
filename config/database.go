@@ -8,7 +8,4 @@ import (
 var (
 	// DB is the MySQL database connection
 	DB *gorm.DB
-
-	// Not very secret key
-	JWTSecret = "secret"
 )

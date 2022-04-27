@@ -9,14 +9,14 @@ import (
 
 func GetNotes(c *fiber.Ctx) error {
 	var notes []models.Note
-	config.DB.Find(&notes)
+	config.DB.Joins("User").Find(&notes)
 	return c.JSON(notes)
 }
 
 func GetNote(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var note models.Note
-	config.DB.First(&note, id).Joins("User")
+	config.DB.Joins("User").First(&note, id)
 	return c.JSON(note)
 }
 
@@ -28,6 +28,7 @@ func CreateNote(c *fiber.Ctx) error {
 		return err
 	}
 	config.DB.Create(&note)
+	config.DB.Joins("User").First(&note, note.ID)
 	return c.JSON(note)
 }
 
@@ -38,6 +39,7 @@ func UpdateNote(c *fiber.Ctx) error {
 		return err
 	}
 	config.DB.Model(&note).Where("id = ?", id).Updates(note)
+	config.DB.Joins("User").First(&note, id)
 	return c.JSON(note)
 }
 

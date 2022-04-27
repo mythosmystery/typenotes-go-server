@@ -1,9 +1,11 @@
 package middleware
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gofiber/fiber/v2"
-	"github.com/mythosmystery/typenotes-go-server/config"
 )
 
 type AuthUser struct {
@@ -13,22 +15,22 @@ type AuthUser struct {
 }
 
 func Authorized(c *fiber.Ctx) error {
-	token := c.Get("Authorization")
-	if token == "" {
+	authHeader := c.Get("Authorization")
+	if authHeader == "" {
 		return c.Status(401).SendString("Unauthorized")
 	}
-	mapClaims := jwt.MapClaims{}
-	parsed, err := jwt.ParseWithClaims(token, mapClaims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.JWTSecret), nil
+	token, err := jwt.Parse(authHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
-	claims := parsed.Claims.(jwt.MapClaims)
-	user := AuthUser{
-		ID:       uint(claims["id"].(float64)),
-		Username: claims["username"].(string),
-		Email:    claims["email"].(string),
-	}
-	c.Locals("user", user)
-	if err != nil {
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		user := AuthUser{
+			ID:       uint(claims["id"].(float64)),
+			Username: claims["username"].(string),
+			Email:    claims["email"].(string),
+		}
+		c.Locals("user", user)
+	} else {
+		fmt.Println(err)
 		return c.Status(401).SendString("Unauthorized")
 	}
 	return c.Next()

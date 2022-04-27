@@ -7,5 +7,6 @@ type Note struct {
 	gorm.Model
 	Title   string
 	Content string 
-	UserId	uint   
+	UserId	uint
+	User		User `gorm:"foreignkey:UserId"`   
 }
