@@ -109,4 +109,5 @@ func InitializeGmail() {
 	if err != nil {
 		log.Fatalf("Unable to retrieve Gmail client: %v", err)
 	}
+	fmt.Println("Gmail service initialized")
 }

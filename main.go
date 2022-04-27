@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"github.com/mythosmystery/typenotes-go-server/config"
 	"github.com/mythosmystery/typenotes-go-server/models"
@@ -34,7 +35,13 @@ func main() {
 	services.InitializeGmail()
 
 	ConnectDB()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:3000",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization, Accept",
+	}))
+
 	routes.InitRoutes(app)
 
-	app.Listen(":3000")
+	app.Listen(":3001")
 }
