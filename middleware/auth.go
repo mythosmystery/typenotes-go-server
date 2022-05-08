@@ -10,11 +10,12 @@ import (
 
 type AuthUser struct {
 	ID       uint   `json:"id"`
-	Username string `json:"username"`	
+	Username string `json:"username"`
 	Email    string `json:"email"`
 }
 
 func Authorized(c *fiber.Ctx) error {
+	// Get token from header
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {
 		return c.Status(401).SendString("Unauthorized")

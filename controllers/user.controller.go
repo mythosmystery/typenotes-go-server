@@ -61,7 +61,7 @@ func LoginUser(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString("Internal server error")
 	}
-
+	c.Response().Header.Add("Token", token)
 	return c.JSON(LoginResponse{
 		Token: token,
 		User:  user,
@@ -85,6 +85,7 @@ func RegisterUser(c *fiber.Ctx) error {
 		return c.Status(500).SendString("Internal server error")
 	}
 
+	c.Response().Header.Add("Token", token)
 	return c.JSON(LoginResponse{
 		Token: token,
 		User:  user,
@@ -107,7 +108,7 @@ func GetMe(c *fiber.Ctx) error {
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		var user models.User
-		config.DB.Find(&user, claims["id"])
+		config.DB.Preload("Notes").Find(&user, claims["id"])
 		return c.JSON(user)
 	}
 	return err

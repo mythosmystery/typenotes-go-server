@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"github.com/mythosmystery/typenotes-go-server/config"
+	"github.com/mythosmystery/typenotes-go-server/middleware"
 	"github.com/mythosmystery/typenotes-go-server/models"
 	"github.com/mythosmystery/typenotes-go-server/routes"
 	"github.com/mythosmystery/typenotes-go-server/services"
@@ -37,9 +38,12 @@ func main() {
 	ConnectDB()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000",
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization, Accept",
+		AllowOrigins:  "http://localhost:3000",
+		AllowHeaders:  "Origin, Content-Type, Accept, Authorization, Accept",
+		ExposeHeaders: "Token",
 	}))
+
+	app.Use(middleware.LogOp)
 
 	routes.InitRoutes(app)
 
